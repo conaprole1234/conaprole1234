@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Panel de quejas · Conaprole</title>
+  <meta name="description" content="Panel interno de quejas ordenadas por prioridad." />
+  <meta name="theme-color" content="#0b5cff" />
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    :root {
+      --blue: #0b5cff;
+      --ink: #0d0d0d;
+      --muted: #5b6472;
+      --line: #e5e7eb;
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --alta: #dc2626;
+      --alta-bg: #fef2f2;
+      --media: #b45309;
+      --media-bg: #fffbeb;
+      --baja: #047857;
+      --baja-bg: #ecfdf5;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100dvh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(246,248,252,.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 9px; font-weight: 700; font-size: 16px; letter-spacing: -0.01em; }
+    .brand-mark {
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      background: var(--blue);
+      color: #fff;
+      display: grid; place-items: center;
+      font-size: 15px;
+    }
+    .actions { display: flex; align-items: center; gap: 8px; }
+    .btn {
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--blue);
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+    }
+    .btn:hover { border-color: var(--blue); background: #f5f8ff; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn svg { width: 15px; height: 15px; }
+
+    main { max-width: 760px; margin: 0 auto; padding: 18px 16px 40px; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .stat .n { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+    .stat .l { font-size: 11.5px; color: var(--muted); margin-top: 5px; font-weight: 600; }
+    .stat.alta .n { color: var(--alta); }
+    .stat.media .n { color: var(--media); }
+    .stat.baja .n { color: var(--baja); }
+
+    .status {
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.45;
+      background: #fff;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .status.err { background: #fef3f2; border-color: #fecdca; color: #b42318; }
+
+    .group { margin-top: 26px; }
+    .group-head { display: flex; align-items: center; gap: 9px; margin: 0 2px 10px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .group-head h2 { font-size: 15px; margin: 0; letter-spacing: -0.01em; }
+    .group-head .pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: auto;
+    }
+    .g-alta .dot { background: var(--alta); }
+    .g-alta .pill { background: var(--alta-bg); color: var(--alta); border: 1px solid #fecaca; }
+    .g-media .dot { background: var(--media); }
+    .g-media .pill { background: var(--media-bg); color: var(--media); border: 1px solid #fde68a; }
+    .g-baja .dot { background: var(--baja); }
+    .g-baja .pill { background: var(--baja-bg); color: var(--baja); border: 1px solid #a7f3d0; }
+
+    .list { display: flex; flex-direction: column; gap: 10px; }
+    .item {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 14px;
+      box-shadow: 0 4px 14px rgba(13,20,40,.04);
+    }
+    .g-alta .item { border-left-color: var(--alta); }
+    .g-media .item { border-left-color: var(--media); }
+    .g-baja .item { border-left-color: var(--baja); }
+    .item .top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
+    .cat {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #344054;
+      background: #f2f4f7;
+      border: 1px solid #e4e7ec;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .date { font-size: 11.5px; color: #98a2b3; margin-left: auto; white-space: nowrap; }
+    .texto { font-size: 14.5px; line-height: 1.5; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+    footer { text-align: center; color: #98a2b3; font-size: 12px; padding: 10px 16px 30px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">📋</span>
+        <span>Panel de quejas</span>
+      </div>
+      <div class="actions">
+        <button class="btn" id="refresh" type="button" title="Actualizar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/>
+          </svg>
+          Actualizar
+        </button>
+        <a class="btn" href="./index.html" title="Nueva queja">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          Nueva
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="stats" id="stats">
+      <div class="stat"><div class="n" id="s-total">—</div><div class="l">Total</div></div>
+      <div class="stat alta"><div class="n" id="s-alta">—</div><div class="l">Alta</div></div>
+      <div class="stat media"><div class="n" id="s-media">—</div><div class="l">Media</div></div>
+      <div class="stat baja"><div class="n" id="s-baja">—</div><div class="l">Baja</div></div>
+    </div>
+
+    <div class="status" id="status">Cargando quejas…</div>
+    <div id="groups"></div>
+  </main>
+
+  <footer>Buzón inteligente · ordenado por prioridad y fecha</footer>
+
+  <script>
+    (function () {
+      var statusEl = document.getElementById('status');
+      var groupsEl = document.getElementById('groups');
+      var refreshBtn = document.getElementById('refresh');
+
+      var PRIORIDADES = [
+        { key: 'alta',  titulo: 'Prioridad alta',  clase: 'g-alta'  },
+        { key: 'media', titulo: 'Prioridad media', clase: 'g-media' },
+        { key: 'baja',  titulo: 'Prioridad baja',  clase: 'g-baja'  }
+      ];
+
+      function escapeHtml(s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatDate(v) {
+        if (!v) return '';
+        var d;
+        if (typeof v === 'number') {
+          d = new Date(v < 1e12 ? v * 1000 : v);
+        } else {
+          var s = String(v);
+          if (/^\d+$/.test(s)) {
+            var n = Number(s);
+            d = new Date(n < 1e12 ? n * 1000 : n);
+          } else {
+            d = new Date(s.indexOf('T') !== -1 ? s : s.replace(' ', 'T') + 'Z');
+          }
+        }
+        if (isNaN(d.getTime())) return escapeHtml(String(v));
+        try {
+          return d.toLocaleString('es-UY', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+        } catch (e) {
+          return d.toISOString();
+        }
+      }
+
+      function normPrioridad(p) {
+        var v = String(p || '').toLowerCase().trim();
+        if (v === 'alta' || v === 'media' || v === 'baja') return v;
+        return 'media';
+      }
+
+      function render(data) {
+        var quejas = Array.isArray(data) ? data : (data && Array.isArray(data.quejas) ? data.quejas : []);
+
+        var counts = { alta: 0, media: 0, baja: 0 };
+        quejas.forEach(function (q) { counts[normPrioridad(q.prioridad)]++; });
+
+        document.getElementById('s-total').textContent = quejas.length;
+        document.getElementById('s-alta').textContent = counts.alta;
+        document.getElementById('s-media').textContent = counts.media;
+        document.getElementById('s-baja').textContent = counts.baja;
+
+        if (!quejas.length) {
+          statusEl.className = 'status';
+          statusEl.textContent = 'Todavía no hay quejas registradas.';
+          groupsEl.innerHTML = '';
+          return;
+        }
+
+        statusEl.className = 'status';
+        statusEl.textContent = quejas.length + (quejas.length === 1 ? ' queja registrada.' : ' quejas registradas.');
+
+        var html = '';
+        PRIORIDADES.forEach(function (p) {
+          var items = quejas.filter(function (q) { return normPrioridad(q.prioridad) === p.key; });
+          if (!items.length) return;
+
+          html += '<section class="group ' + p.clase + '">';
+          html += '<div class="group-head">';
+          html += '<span class="dot" aria-hidden="true"></span>';
+          html += '<h2>' + escapeHtml(p.titulo) + '</h2>';
+          html += '<span class="pill">' + items.length + '</span>';
+          html += '</div><div class="list">';
+
+          items.forEach(function (q) {
+            var categoria = q.categoria ? escapeHtml(q.categoria) : 'Sin categoría';
+            var texto = escapeHtml(q.texto || '');
+            var fecha = formatDate(q.creada);
+            html += '<article class="item">';
+            html += '<div class="top">';
+            html += '<span class="cat">' + categoria + '</span>';
+            html += '<span class="date">' + fecha + '</span>';
+            html += '</div>';
+            html += '<p class="texto">' + texto + '</p>';
+            html += '</article>';
+          });
+
+          html += '</div></section>';
+        });
+
+        groupsEl.innerHTML = html;
+      }
+
+      async function cargar() {
+        refreshBtn.disabled = true;
+        statusEl.className = 'status';
+        statusEl.textContent = 'Cargando quejas…';
+        try {
+          var res = await fetch('./api/quejas', { headers: { 'Accept': 'application/json' } });
+          var data = null;
+          try { data = await res.json(); } catch (e) { data = null; }
+
+          if (!res.ok) {
+            var msg = (data && data.error) ? data.error : ('Error ' + res.status + ' al cargar.');
+            throw new Error(msg);
+          }
+          render(data);
+        } catch (err) {
+          statusEl.className = 'status err';
+          statusEl.textContent = err.message || 'No se pudieron cargar las quejas.';
+          groupsEl.innerHTML = '';
+        } finally {
+          refreshBtn.disabled = false;
+        }
+      }
+
+      refreshBtn.addEventListener('click', cargar);
+      cargar();
+      setInterval(cargar, 60000);
+    })();
+  </script>
+</body>
+</html>

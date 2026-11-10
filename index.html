@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Buzón de quejas · Conaprole</title>
+  <meta name="description" content="Enviá tu queja de forma rápida y anónima. La priorizamos automáticamente." />
+  <meta name="theme-color" content="#0b5cff" />
+  <style>
+    :root {
+      --blue: #0b5cff;
+      --blue-dark: #0847c4;
+      --ink: #0d0d0d;
+      --muted: #5b6472;
+      --line: #e5e7eb;
+      --bg: #f6f8fc;
+      --card: #ffffff;
+      --err: #dc2626;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(1200px 500px at 50% -200px, #dbe6ff 0%, var(--bg) 55%) no-repeat, var(--bg);
+      color: var(--ink);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    header { padding: 22px 20px 8px; text-align: center; }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-size: 18px;
+    }
+    .brand-mark {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: var(--blue);
+      color: #fff;
+      display: grid; place-items: center;
+      font-size: 17px;
+      box-shadow: 0 6px 18px rgba(11,92,255,.30);
+    }
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 8px 16px 28px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      box-shadow: 0 10px 30px rgba(13, 20, 40, .06);
+    }
+    h1 { font-size: 22px; line-height: 1.25; margin: 6px 0 6px; letter-spacing: -0.02em; }
+    .sub { margin: 0 0 18px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #344054; margin: 16px 0 7px; }
+    select, textarea {
+      width: 100%;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 12px;
+      padding: 13px 14px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      appearance: none;
+    }
+    select:focus, textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(11,92,255,.14);
+    }
+    textarea { min-height: 130px; resize: vertical; line-height: 1.45; }
+    .select-wrap { position: relative; }
+    .select-wrap::after {
+      content: "";
+      position: absolute;
+      right: 16px; top: 50%;
+      width: 9px; height: 9px;
+      border-right: 2px solid #667085;
+      border-bottom: 2px solid #667085;
+      transform: translateY(-70%) rotate(45deg);
+      pointer-events: none;
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 7px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .meta .count.warn { color: var(--err); font-weight: 700; }
+    button.submit {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px 18px;
+      font: inherit;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      background: var(--blue);
+      border: 0;
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background .15s, transform .05s;
+      box-shadow: 0 8px 20px rgba(11,92,255,.28);
+    }
+    button.submit:hover { background: var(--blue-dark); }
+    button.submit:active { transform: translateY(1px); }
+    button.submit:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+    .toast {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .toast.show { display: block; }
+    .toast.ok { background: #ecfdf3; color: #05603a; border: 1px solid #abefc6; }
+    .toast.err { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; }
+    .panel-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 18px;
+      color: var(--blue);
+      font-weight: 600;
+      font-size: 14.5px;
+      text-decoration: none;
+      padding: 8px 0;
+    }
+    .panel-link:hover { text-decoration: underline; }
+    .panel-link svg { width: 16px; height: 16px; }
+    .footnote {
+      text-align: center;
+      color: #98a2b3;
+      font-size: 12px;
+      margin-top: 20px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">💬</span>
+      <span>Conaprole · Buzón de quejas</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1>Contanos qué pasó</h1>
+      <p class="sub">Tu mensaje es anónimo. Lo priorizamos automáticamente para responder más rápido lo urgente.</p>
+
+      <form id="queja-form" novalidate>
+        <label for="categoria">Categoría</label>
+        <div class="select-wrap">
+          <select id="categoria" name="categoria" required>
+            <option value="" disabled selected>Elegí una categoría…</option>
+            <option value="Producto en mal estado">Producto en mal estado</option>
+            <option value="Problema con un local">Problema con un local</option>
+            <option value="Atención al cliente">Atención al cliente</option>
+            <option value="Precio o cobro">Precio o cobro</option>
+            <option value="Falta de stock">Falta de stock</option>
+            <option value="Sugerencia o idea">Sugerencia o idea</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <label for="texto">Tu queja</label>
+        <textarea
+          id="texto"
+          name="texto"
+          maxlength="500"
+          required
+          placeholder="Contanos con el mayor detalle posible: producto, local, fecha, qué pasó…"
+        ></textarea>
+        <div class="meta">
+          <span>Sin datos personales, por favor.</span>
+          <span class="count" id="count">0 / 500</span>
+        </div>
+
+        <button type="submit" class="submit" id="btn">Enviar queja</button>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </form>
+
+      <a class="panel-link" href="./panel.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>
+        </svg>
+        Ver panel de quejas
+      </a>
+    </div>
+
+    <p class="footnote">Buzón inteligente · Las quejas se priorizan con IA<br />Máximo 500 caracteres por mensaje.</p>
+  </main>
+
+  <script>
+    (function () {
+      var form = document.getElementById('queja-form');
+      var texto = document.getElementById('texto');
+      var categoria = document.getElementById('categoria');
+      var count = document.getElementById('count');
+      var btn = document.getElementById('btn');
+      var toast = document.getElementById('toast');
+
+      var MAX = 500;
+
+      function updateCount() {
+        var n = texto.value.length;
+        count.textContent = n + ' / ' + MAX;
+        count.classList.toggle('warn', n >= MAX);
+      }
+      texto.addEventListener('input', updateCount);
+      updateCount();
+
+      function showToast(kind, msg) {
+        toast.className = 'toast show ' + kind;
+        toast.textContent = msg;
+      }
+      function hideToast() {
+        toast.className = 'toast';
+        toast.textContent = '';
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideToast();
+
+        var t = texto.value.trim();
+        var c = categoria.value;
+
+        if (!c) {
+          showToast('err', 'Elegí una categoría.');
+          categoria.focus();
+          return;
+        }
+        if (t.length < 10) {
+          showToast('err', 'Contanos un poco más (mínimo 10 caracteres).');
+          texto.focus();
+          return;
+        }
+        if (t.length > MAX) {
+          showToast('err', 'El texto supera los ' + MAX + ' caracteres.');
+          texto.focus();
+          return;
+        }
+
+        btn.disabled = true;
+        var original = btn.textContent;
+        btn.textContent = 'Enviando…';
+
+        try {
+          var res = await fetch('./api/quejas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texto: t, categoria: c })
+          });
+
+          var data = null;
+          try { data = await res.json(); } catch (err) { data = null; }
+
+          if (!res.ok) {
+            var msg = (data && data.error) ? data.error : ('Error al enviar (' + res.status + ').');
+            throw new Error(msg);
+          }
+
+          form.reset();
+          updateCount();
+          showToast('ok', '¡Gracias! Tu queja fue recibida y priorizada' +
+            (data && data.prioridad ? ' como ' + data.prioridad : '') + '.');
+        } catch (err) {
+          showToast('err', err.message || 'No pudimos enviar tu queja. Probá de nuevo.');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
